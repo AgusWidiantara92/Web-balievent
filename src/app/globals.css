@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #ea580c;         /* Balinese Sunset Orange */
+  --color-primary-light: #ffedd5;
+  --color-primary-dark: #c2410c;
+  
+  --color-secondary: #0d9488;       /* Tropical Ocean Teal */
+  --color-secondary-light: #ccfbf1;
+  --color-secondary-dark: #0f766e;
+  
+  --color-accent: #eab308;          /* Balinese Gold */
+  --color-accent-light: #fef9c3;
+  
+  --color-bali-sand: #fdfbf7;       /* Soft Sand Neutral */
+  --color-bali-charcoal: #1e1e24;   /* Deep Charcoal Neutral */
+  
+  --font-sans: var(--font-geist-sans), Inter, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+:root {
+  --background: #fdfbf7;
+  --foreground: #1e1e24;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121214;
+    --foreground: #f3f4f6;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Premium custom utilities */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass-effect {
+  background: rgba(18, 18, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #ea580c 0%, #0d9488 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

@@ -1,0 +1,179 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum Role {
+  ADMIN
+  ORGANIZER
+  USER
+}
+
+enum EventStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  CANCELLED
+  ATTENDED
+  NOT_ATTENDED
+}
+
+// ==========================================
+// MODELS
+// ==========================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String? // Hashed password for credentials-based authentication
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts Account[]
+  sessions Session[]
+
+  // App Relations
+  organizedEvents Event[]             @relation("OrganizerEvents")
+  registrations   EventRegistration[]
+  reviews         EventReview[]
+}
+
+// NextAuth standard models for Auth.js adapter
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  events Event[]
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  name      String // e.g., "Art Center Bali", "Garuda Wisnu Kencana"
+  address   String   @db.Text
+  city      String   @default("Bali")
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  events Event[]
+}
+
+model Event {
+  id              String      @id @default(cuid())
+  title           String
+  slug            String      @unique
+  description     String      @db.Text
+  poster          String? // URL path to event image/banner
+  startDate       DateTime
+  endDate         DateTime
+  startTime       String // e.g. "18:00"
+  endTime         String // e.g. "21:00"
+  price           Float       @default(0) // 0 means free event
+  quota           Int         @default(0)
+  status          EventStatus @default(PENDING)
+  rejectionReason String?     @db.Text
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Foreign keys
+  organizerId String
+  categoryId  String
+  locationId  String
+
+  // Relations
+  organizer     User                @relation("OrganizerEvents", fields: [organizerId], references: [id], onDelete: Cascade)
+  category      Category            @relation(fields: [categoryId], references: [id])
+  location      Location            @relation(fields: [locationId], references: [id])
+  registrations EventRegistration[]
+  reviews       EventReview[]
+}
+
+model EventRegistration {
+  id               String             @id @default(cuid())
+  eventId          String
+  userId           String
+  registrationCode String             @unique // e.g. EVT-2026-XXXXX
+  qrCode           String?            @db.Text // Can store Base64 QR code or URL
+  status           RegistrationStatus @default(REGISTERED)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EventReview {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  rating    Int // 1 to 5 scale
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
