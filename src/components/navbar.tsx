@@ -5,9 +5,11 @@ import Link from "next/link";
 import { Container } from "./ui/container";
 import { Button } from "./ui/button";
 import { Menu, X, Calendar } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -40,16 +42,36 @@ export function Navbar() {
               </Link>
             ))}
             <div className="h-4 w-px bg-gray-200 dark:bg-gray-800" />
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Login
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button variant="primary" size="sm">
-                Register
-              </Button>
-            </Link>
+            {status === "authenticated" ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="ghost" size="sm" className="text-primary font-bold">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="cursor-pointer"
+                >
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button variant="primary" size="sm">
+                    Register
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -79,18 +101,39 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-col space-y-2">
-              <Link href="/login" onClick={() => setIsOpen(false)} className="w-full">
-                <Button variant="outline" size="sm" className="w-full">
-                  Login
+            {status === "authenticated" ? (
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-col space-y-2">
+                <Link href="/dashboard" onClick={() => setIsOpen(false)} className="w-full">
+                  <Button variant="primary" size="sm" className="w-full">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsOpen(false);
+                    signOut({ callbackUrl: "/" });
+                  }}
+                  className="w-full cursor-pointer"
+                >
+                  Sign Out
                 </Button>
-              </Link>
-              <Link href="/register" onClick={() => setIsOpen(false)} className="w-full">
-                <Button variant="primary" size="sm" className="w-full">
-                  Register
-                </Button>
-              </Link>
-            </div>
+              </div>
+            ) : (
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-col space-y-2">
+                <Link href="/login" onClick={() => setIsOpen(false)} className="w-full">
+                  <Button variant="outline" size="sm" className="w-full">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register" onClick={() => setIsOpen(false)} className="w-full">
+                  <Button variant="primary" size="sm" className="w-full">
+                    Register
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
