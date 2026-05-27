@@ -1,5 +1,5 @@
-import { auth, signOut } from "@/auth";
-import { redirect } from "next/navigation";
+import { signOut } from "@/auth";
+import { requireRole } from "@/lib/auth";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,17 +14,7 @@ import {
 } from "lucide-react";
 
 export default async function OrganizerDashboardPage() {
-  const session = await auth();
-
-  // 1. Guard route: must be logged in
-  if (!session || !session.user) {
-    redirect("/login");
-  }
-
-  // 2. Guard route: must be ORGANIZER
-  if (session.user.role !== "ORGANIZER") {
-    redirect("/dashboard");
-  }
+  const user = await requireRole("ORGANIZER");
 
   return (
     <div className="min-h-screen bg-bali-sand dark:bg-[#121214] py-12">
@@ -77,21 +67,21 @@ export default async function OrganizerDashboardPage() {
                   <User className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-[10px] font-semibold uppercase text-gray-400">Nama</p>
-                    <p className="text-gray-800 dark:text-gray-200 font-semibold">{session.user.name}</p>
+                    <p className="text-gray-800 dark:text-gray-200 font-semibold">{user.name}</p>
                   </div>
                 </div>
                 <div className="flex gap-2.5">
                   <Mail className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-[10px] font-semibold uppercase text-gray-400">Email</p>
-                    <p className="text-gray-800 dark:text-gray-200 font-semibold">{session.user.email}</p>
+                    <p className="text-gray-800 dark:text-gray-200 font-semibold">{user.email}</p>
                   </div>
                 </div>
                 <div className="flex gap-2.5">
                   <Lock className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-[10px] font-semibold uppercase text-gray-400">Role</p>
-                    <p className="text-secondary font-bold">{session.user.role}</p>
+                    <p className="text-secondary font-bold">{user.role}</p>
                   </div>
                 </div>
               </div>
