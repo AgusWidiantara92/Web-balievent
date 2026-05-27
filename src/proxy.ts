@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import type { NextRequest, NextFetchEvent } from "next/server";
 
 /**
  * Role-to-path mapping for dashboard routes.
@@ -24,7 +24,7 @@ const PROTECTED_PREFIXES = ["/dashboard"];
  */
 const AUTH_PAGES = ["/login", "/register"];
 
-export default auth((req) => {
+const authHandler = auth((req) => {
   const { nextUrl } = req;
   const pathname = nextUrl.pathname;
   const isLoggedIn = !!req.auth;
@@ -72,6 +72,10 @@ export default auth((req) => {
 
   return NextResponse.next();
 });
+
+export default function proxy(req: NextRequest, event: NextFetchEvent) {
+  return (authHandler as any)(req, event);
+}
 
 /**
  * Matcher config — only run middleware on relevant routes.
