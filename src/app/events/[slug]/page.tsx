@@ -340,7 +340,7 @@ export default async function EventDetailPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-bali-sand dark:bg-[#121214] pb-16">
       {/* 1. Backdrop / Banner Cover */}
-      <div className="relative h-[280px] sm:h-[400px] w-full overflow-hidden bg-black">
+      <div className="relative h-[180px] sm:h-[260px] w-full overflow-hidden bg-black">
         {/* Blurred background image */}
         <div 
           className="absolute inset-0 bg-cover bg-center blur-2xl opacity-40 scale-110"
@@ -349,7 +349,7 @@ export default async function EventDetailPage({ params }: PageProps) {
         {/* Soft overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-bali-sand via-black/50 to-black/30 dark:from-[#121214]" />
 
-        <Container className="relative h-full flex flex-col justify-between pt-6 pb-8 z-10">
+        <Container className="relative h-full flex flex-col justify-center pt-4 z-10">
           {/* Breadcrumb / Back Button */}
           <div>
             <Link
@@ -360,26 +360,6 @@ export default async function EventDetailPage({ params }: PageProps) {
               Kembali ke Event
             </Link>
           </div>
-
-          {/* Quick Info inside Hero for Mobile Desktop Alignment */}
-          <div className="hidden md:block max-w-3xl">
-            <span className="inline-flex items-center rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-200">
-              {event.category.name}
-            </span>
-            <h1 className="text-4xl lg:text-5xl font-extrabold text-white mt-4 drop-shadow-md leading-tight">
-              {event.title}
-            </h1>
-            <div className="flex flex-wrap items-center gap-6 text-gray-300 text-sm mt-4 font-medium">
-              <span className="flex items-center gap-1.5">
-                <MapPin className="h-4 w-4 text-secondary-light" />
-                {event.location.name}, {event.location.city}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4 text-primary-light" />
-                {formatIndonesianDate(event.startDate)}
-              </span>
-            </div>
-          </div>
         </Container>
       </div>
 
@@ -387,7 +367,7 @@ export default async function EventDetailPage({ params }: PageProps) {
       <Container className="relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
           {/* Left Block (2/3 Column) */}
-          <div className="lg:col-span-2 -mt-16 md:-mt-24 space-y-8">
+          <div className="lg:col-span-2 -mt-12 md:-mt-20 space-y-8">
             {/* Visual Overlap Poster for premium look */}
             <div className="relative group max-w-md lg:max-w-none rounded-2xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800 bg-white dark:bg-gray-900 transition-transform duration-300 hover:scale-[1.01]">
               <div className="relative aspect-[16/10] w-full">
@@ -399,20 +379,20 @@ export default async function EventDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Mobile Header Block (only visible on mobile) */}
-            <div className="block md:hidden space-y-4">
-              <span className="inline-flex items-center rounded-full bg-orange-100 dark:bg-orange-950/40 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary dark:text-orange-400">
+            {/* Event Header Block (Visible on all viewports, clean and unblocked) */}
+            <div className="space-y-4">
+              <span className="inline-flex items-center rounded-full bg-orange-100 dark:bg-orange-950/40 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-primary dark:text-orange-400">
                 {event.category.name}
               </span>
-              <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight">
                 {event.title}
               </h1>
-              <div className="flex flex-col gap-2 text-gray-600 dark:text-gray-400 text-sm font-medium">
-                <span className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-gray-600 dark:text-gray-400 text-sm font-medium">
+                <span className="flex items-center gap-1.5">
                   <MapPin className="h-4 w-4 text-secondary" />
                   {event.location.name}, {event.location.city}
                 </span>
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-1.5">
                   <Calendar className="h-4 w-4 text-primary" />
                   {formatIndonesianDate(event.startDate)}
                 </span>
