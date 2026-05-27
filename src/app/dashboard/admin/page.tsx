@@ -1,34 +1,79 @@
 import { signOut } from "@/auth";
 import { requireRole } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
+import { PendingEventsTable } from "./pending-events-table";
 import {
   ShieldAlert,
-  User,
+  User as UserIcon,
   Mail,
   Lock,
   LogOut,
-  Settings,
-  Database,
   Calendar,
+  Clock,
+  CheckCircle2,
+  Users,
+  Compass,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
+  // 1. Ensure only logged-in user with ADMIN role can access
   const user = await requireRole("ADMIN");
 
+  // 2. Fetch statistics and pending events concurrently for maximum speed
+  const [
+    totalEvents,
+    pendingCount,
+    approvedCount,
+    totalUsers,
+    totalOrganizers,
+    pendingEvents,
+  ] = await Promise.all([
+    prisma.event.count(),
+    prisma.event.count({ where: { status: "PENDING" } }),
+    prisma.event.count({ where: { status: "APPROVED" } }),
+    prisma.user.count({ where: { role: "USER" } }),
+    prisma.user.count({ where: { role: "ORGANIZER" } }),
+    prisma.event.findMany({
+      where: { status: "PENDING" },
+      include: {
+        organizer: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        location: {
+          select: {
+            name: true,
+            city: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc", // Newest pending events first
+      },
+    }),
+  ]);
+
   return (
-    <div className="min-h-screen bg-bali-sand dark:bg-[#121214] py-12">
+    <div className="min-h-screen bg-bali-sand/40 dark:bg-[#121214] py-8 sm:py-12">
       <Container>
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="space-y-8">
           
-          {/* Header Card */}
-          <div className="bg-white dark:bg-[#1c1c21] rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-150/40 dark:border-gray-800/80 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          {/* Header Card / Top Welcome Banner */}
+          <div className="bg-white dark:bg-[#1c1c21] rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-150/40 dark:border-gray-800/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-orange-100 dark:bg-orange-950/40 text-primary">
-                <ShieldAlert className="h-8 w-8" />
+              <div className="p-3.5 rounded-2xl bg-orange-100 dark:bg-orange-950/40 text-primary">
+                <ShieldAlert className="h-8 w-8 text-primary" />
               </div>
               <div>
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary dark:bg-primary/20 dark:text-primary-light">
+                <span className="inline-flex items-center rounded-full bg-orange-100/60 dark:bg-orange-950/50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary dark:text-primary-light">
                   System Admin
                 </span>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mt-1.5 tracking-tight">
@@ -46,7 +91,7 @@ export default async function AdminDashboardPage() {
             >
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 hover:bg-red-50 hover:text-red-600 dark:bg-gray-900 dark:hover:bg-red-950/20 dark:hover:text-red-400 text-gray-700 dark:text-gray-300 font-bold text-sm rounded-xl transition-all shadow-sm cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-3 bg-gray-100 hover:bg-red-50 hover:text-red-600 dark:bg-gray-900 dark:hover:bg-red-950/20 dark:hover:text-red-400 text-gray-700 dark:text-gray-300 font-bold text-sm rounded-xl transition-all border border-gray-200/20 shadow-sm cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
                 Sign Out
@@ -54,68 +99,78 @@ export default async function AdminDashboardPage() {
             </form>
           </div>
 
-          {/* Grid Content */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Statistics Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
             
-            {/* User Profile Card */}
-            <div className="md:col-span-1 bg-white dark:bg-[#1c1c21] rounded-2xl p-6 shadow-md border border-gray-150/40 dark:border-gray-800/80 space-y-4">
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg pb-2 border-b border-gray-100 dark:border-gray-800">
-                Profil Saya
-              </h3>
-              <div className="space-y-3.5 text-sm">
-                <div className="flex gap-2.5">
-                  <User className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase text-gray-400">Nama</p>
-                    <p className="text-gray-800 dark:text-gray-200 font-semibold">{user.name}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2.5">
-                  <Mail className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase text-gray-400">Email</p>
-                    <p className="text-gray-800 dark:text-gray-200 font-semibold">{user.email}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2.5">
-                  <Lock className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase text-gray-400">Role</p>
-                    <p className="text-primary font-bold">{user.role}</p>
-                  </div>
-                </div>
+            {/* Stat 1: Total Event */}
+            <div className="bg-white dark:bg-[#1c1c21] rounded-2xl p-5 shadow-md border border-gray-150/40 dark:border-gray-800/80 flex items-center gap-4 hover:translate-y-[-2px] transition-transform duration-300">
+              <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400">
+                <Calendar className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Event</p>
+                <h3 className="text-xl sm:text-2xl font-black text-gray-800 dark:text-white mt-0.5">
+                  {totalEvents}
+                </h3>
               </div>
             </div>
 
-            {/* Quick Stats Placeholder */}
-            <div className="md:col-span-2 bg-white dark:bg-[#1c1c21] rounded-2xl p-6 shadow-md border border-gray-150/40 dark:border-gray-800/80 flex flex-col justify-between">
-              <div>
-                <h3 className="font-bold text-gray-900 dark:text-white text-lg pb-2 border-b border-gray-100 dark:border-gray-800">
-                  Panel Kontrol Utama
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
-                  Selamat datang kembali di area Administrator BaliEvent. Di sini Anda dapat menyetujui event pariwisata & budaya baru yang didaftarkan oleh organizer, mengelola kategori, serta memoderasi komentar pengguna.
-                </p>
+            {/* Stat 2: Event Pending */}
+            <div className="bg-white dark:bg-[#1c1c21] rounded-2xl p-5 shadow-md border border-gray-150/40 dark:border-gray-800/80 flex items-center gap-4 hover:translate-y-[-2px] transition-transform duration-300">
+              <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400">
+                <Clock className="h-6 w-6" />
               </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Pending</p>
+                <h3 className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 mt-0.5">
+                  {pendingCount}
+                </h3>
+              </div>
+            </div>
 
-              {/* Action grid dummy for beautiful styling */}
-              <div className="grid grid-cols-3 gap-3 mt-6">
-                <div className="p-3 bg-orange-50 dark:bg-orange-950/20 rounded-xl border border-orange-100/50 dark:border-orange-900/30 text-center cursor-pointer hover:scale-[1.02] transition-transform">
-                  <Calendar className="h-5 w-5 text-primary mx-auto mb-1" />
-                  <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">Moderasi Event</span>
-                </div>
-                <div className="p-3 bg-teal-50 dark:bg-teal-950/20 rounded-xl border border-teal-100/50 dark:border-teal-900/30 text-center cursor-pointer hover:scale-[1.02] transition-transform">
-                  <Database className="h-5 w-5 text-secondary mx-auto mb-1" />
-                  <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">Kelola Data</span>
-                </div>
-                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 text-center cursor-pointer hover:scale-[1.02] transition-transform">
-                  <Settings className="h-5 w-5 text-gray-500 mx-auto mb-1" />
-                  <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">Pengaturan</span>
-                </div>
+            {/* Stat 3: Event Approved */}
+            <div className="bg-white dark:bg-[#1c1c21] rounded-2xl p-5 shadow-md border border-gray-150/40 dark:border-gray-800/80 flex items-center gap-4 hover:translate-y-[-2px] transition-transform duration-300">
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Approved</p>
+                <h3 className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  {approvedCount}
+                </h3>
+              </div>
+            </div>
+
+            {/* Stat 4: Total User */}
+            <div className="bg-white dark:bg-[#1c1c21] rounded-2xl p-5 shadow-md border border-gray-150/40 dark:border-gray-800/80 flex items-center gap-4 hover:translate-y-[-2px] transition-transform duration-300">
+              <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400">
+                <Users className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total User</p>
+                <h3 className="text-xl sm:text-2xl font-black text-purple-600 dark:text-purple-400 mt-0.5">
+                  {totalUsers}
+                </h3>
+              </div>
+            </div>
+
+            {/* Stat 5: Total Organizer */}
+            <div className="bg-white dark:bg-[#1c1c21] rounded-2xl p-5 shadow-md border border-gray-150/40 dark:border-gray-800/80 flex items-center gap-4 hover:translate-y-[-2px] transition-transform duration-300 col-span-2 lg:col-span-1">
+              <div className="p-3 rounded-xl bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400">
+                <Compass className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Organizer</p>
+                <h3 className="text-xl sm:text-2xl font-black text-teal-600 dark:text-teal-400 mt-0.5">
+                  {totalOrganizers}
+                </h3>
               </div>
             </div>
 
           </div>
+
+          {/* Table Moderasi Section */}
+          <PendingEventsTable events={pendingEvents} />
 
         </div>
       </Container>
