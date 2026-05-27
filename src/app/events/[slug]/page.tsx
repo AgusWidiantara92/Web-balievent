@@ -19,159 +19,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 
-// Highly detailed mock database for events to serve as fallback
-const mockDetailEvents = [
-  {
-    id: "1",
-    title: "Festival Budaya Ubud 2026",
-    slug: "festival-budaya-ubud-2026",
-    description:
-      "Perayaan seni pertunjukan, lokakarya budaya, dan pameran seni rupa tahunan yang menghadirkan seniman lokal dan internasional di Ubud. Event ini bertujuan untuk memperkenalkan kebudayaan Bali yang kaya ke mata dunia, memberikan wadah bagi maestro seni tradisional, dan melestarikan warisan leluhur untuk generasi mendatang.\n\nIkuti serangkaian lokakarya interaktif mulai dari melukis gaya Ubud, membuat ukiran kayu khas Bali, hingga belajar memainkan gamelan. Di malam hari, saksikan pertunjukan tari kolosal berlatar Pura Saraswati yang memukau.",
-    poster:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-08-10T00:00:00.000Z",
-    endDate: "2026-08-15T00:00:00.000Z",
-    startTime: "09:00",
-    endTime: "22:00",
-    price: 150000,
-    quota: 1000,
-    category: { id: "c1", name: "Budaya", slug: "budaya" },
-    location: {
-      id: "l1",
-      name: "Gianyar",
-      address: "Puri Agung Ubud, Jl. Raya Ubud, Ubud, Kabupaten Gianyar, Bali 80571",
-      city: "Gianyar",
-    },
-    organizer: {
-      name: "Yayasan Bina Budaya Ubud",
-    },
-  },
-  {
-    id: "2",
-    title: "Pertunjukan Tari Kecak Uluwatu",
-    slug: "pertunjukan-tari-kecak-uluwatu",
-    description:
-      "Nikmati dramatisasi kisah Ramayana melalui paduan suara ritmis tari kecak berlatar belakang pura tebing samudera dan matahari terbenam Uluwatu yang spektakuler. Tari Kecak Uluwatu adalah pertunjukan tari tradisional Bali paling ikonik yang dimainkan oleh puluhan penari pria yang duduk melingkar, menciptakan ritme suara 'cak-cak' yang harmonis tanpa alat musik instrumental.\n\nKisah heroik penyelamatan Sita oleh Rama dibantu oleh pasukan kera Hanuman dikemas dengan aksi teatrikal api yang menegangkan dan komedi interaktif di puncak tebing karang berhadapan langsung dengan Samudra Hindia.",
-    poster:
-      "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-06-01T00:00:00.000Z",
-    endDate: "2026-06-01T00:00:00.000Z",
-    startTime: "17:00",
-    endTime: "19:30",
-    price: 150000,
-    quota: 200,
-    category: { id: "c2", name: "Seni", slug: "seni" },
-    location: {
-      id: "l2",
-      name: "Badung",
-      address: "Pura Luhur Uluwatu, Pecatu, Kuta Selatan, Kabupaten Badung, Bali 80361",
-      city: "Badung",
-    },
-    organizer: {
-      name: "Desa Adat Pecatu Culture",
-    },
-  },
-  {
-    id: "3",
-    title: "Bali Culinary & Food Bazaar",
-    slug: "bali-culinary-food-bazaar",
-    description:
-      "Pusat festival kuliner terbesar yang menyajikan kuliner otentik Bali mulai dari babi guling, sate lilit, hingga kuliner modern kreatif nusantara. Menghadirkan ratusan stand kuliner legendaris dari berbagai kabupaten di Bali untuk memanjakan lidah para pecinta makanan.\n\nSelain mencicipi makanan lezat, saksikan live cooking show dari chef terkemuka, lomba memasak masakan tradisional Bali, dan hiburan musik akustik di bawah bintang-bintang Kota Denpasar. Event ini ramah keluarga dan memiliki area bermain anak.",
-    poster:
-      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-06-15T00:00:00.000Z",
-    endDate: "2026-06-17T00:00:00.000Z",
-    startTime: "15:00",
-    endTime: "23:00",
-    price: 0,
-    quota: 300,
-    category: { id: "c3", name: "Kuliner", slug: "kuliner" },
-    location: {
-      id: "l3",
-      name: "Denpasar",
-      address: "Lapangan Niti Mandala Renon, Jl. Raya Puputan, Renon, Denpasar Timur, Kota Denpasar, Bali 80234",
-      city: "Denpasar",
-    },
-    organizer: {
-      name: "Bali Foodies Community",
-    },
-  },
-  {
-    id: "4",
-    title: "Workshop Membuat Canang Sari",
-    slug: "workshop-membuat-canang-sari",
-    description:
-      "Pelajari seni mendalam dari pembuatan Canang Sari, persembahan harian masyarakat Bali yang melambangkan rasa syukur dan keseimbangan semesta. Dipandu langsung oleh ibu-ibu adat (krama istri) Bali yang berpengalaman.\n\nDalam workshop interaktif ini, Anda akan belajar cara melipat janur kelapa dengan indah (jejaitan), merangkai bunga berwarna-warni yang memiliki makna arah mata angin Hindu, dan memahami filosofi spiritual di balik setiap bahan pembuatannya. Seluruh perlengkapan sudah disediakan, dan Anda dapat membawa pulang canang hasil karya sendiri.",
-    poster:
-      "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-06-20T00:00:00.000Z",
-    endDate: "2026-06-20T00:00:00.000Z",
-    startTime: "09:00",
-    endTime: "12:00",
-    price: 50000,
-    quota: 30,
-    category: { id: "c4", name: "Workshop", slug: "workshop" },
-    location: {
-      id: "l1",
-      name: "Denpasar",
-      address: "Taman Budaya Art Center, Jl. Nusa Indah, Sumerta Kelod, Denpasar Timur, Kota Denpasar, Bali 80236",
-      city: "Denpasar",
-    },
-    organizer: {
-      name: "Yayasan Tri Hita Karana",
-    },
-  },
-  {
-    id: "5",
-    title: "Pameran UMKM Bali Kreatif",
-    slug: "pameran-umkm-bali-kreatif",
-    description:
-      "Pameran kerajinan tangan lokal, produk kreatif, fesyen kain tenun tradisional (Endek & Songket), dan inovasi UMKM terbaik dari seluruh Bali. Event ini mempertemukan pengrajin lokal berbakat dengan pembeli lokal dan internasional guna meningkatkan ekonomi kreatif pasca-pandemi.\n\nDapatkan diskon khusus pameran, ikuti talkshow pemberdayaan ekonomi kreatif bersama tokoh inspiratif, dan nikmati fashion show busana modifikasi kain tradisional Bali.",
-    poster:
-      "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-07-05T00:00:00.000Z",
-    endDate: "2026-07-08T00:00:00.000Z",
-    startTime: "10:00",
-    endTime: "21:00",
-    price: 0,
-    quota: 500,
-    category: { id: "c5", name: "UMKM", slug: "umkm" },
-    location: {
-      id: "l2",
-      name: "Badung",
-      address: "Bali Collection Nusa Dua, Benoa, Kuta Selatan, Kabupaten Badung, Bali 80361",
-      city: "Badung",
-    },
-    organizer: {
-      name: "Koperasi & UMKM Provinsi Bali",
-    },
-  },
-  {
-    id: "6",
-    title: "Desa Wisata Penglipuran Festival",
-    slug: "desa-wisata-penglipuran-festival",
-    description:
-      "Festival kebudayaan tahunan di desa adat terbersih di dunia, menampilkan keindahan arsitektur tradisional, parade budaya, tari-tarian sakral, pameran kuliner khas Bangli (loloh cemcem), dan keramahan penduduk desa setempat.\n\nRasakan atmosfer pedesaan Bali kuno yang asri tanpa kendaraan bermotor, jelajahi hutan bambu seluas 45 hektar yang memukau, dan pelajari tata ruang desa adat Tri Hita Karana yang mendunia. Sungguh pengalaman liburan berkesan yang menyentuh jiwa.",
-    poster:
-      "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-09-01T00:00:00.000Z",
-    endDate: "2026-09-04T00:00:00.000Z",
-    startTime: "08:00",
-    endTime: "18:00",
-    price: 25000,
-    quota: 500,
-    category: { id: "c6", name: "Pariwisata", slug: "pariwisata" },
-    location: {
-      id: "l4",
-      name: "Bangli",
-      address: "Desa Adat Penglipuran, Kubu, Kabupaten Bangli, Bali 80611",
-      city: "Bangli",
-    },
-    organizer: {
-      name: "Kelompok Sadar Wisata (Pokdarwis) Penglipuran",
-    },
-  },
-];
+
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -222,9 +70,7 @@ async function getEventData(slug: string) {
     console.log("Database fetch failed or tables do not exist. Falling back to mock data.");
   }
 
-  // Fallback to mock data
-  const mockEvent = mockDetailEvents.find((evt) => evt.slug === slug);
-  return mockEvent || null;
+  return null;
 }
 
 // 2. Fetch Related Events Helper (same category, different id)
@@ -261,24 +107,7 @@ async function getRelatedEvents(categoryId: string, currentEventId: string) {
     // Ignore error, handle fallback
   }
 
-  // Mock related events fallback
-  const currentMockEvent = mockDetailEvents.find((evt) => evt.id === currentEventId);
-  const mockCategoryName = currentMockEvent?.category.name || "Budaya";
-  
-  return mockDetailEvents
-    .filter((evt) => evt.category.name === mockCategoryName && evt.id !== currentEventId)
-    .slice(0, 3)
-    .map((evt) => ({
-      id: evt.id,
-      title: evt.title,
-      slug: evt.slug,
-      poster: evt.poster,
-      startDate: evt.startDate,
-      price: evt.price,
-      quota: evt.quota,
-      category: { name: evt.category.name, slug: evt.category.slug },
-      location: { name: evt.location.name },
-    }));
+  return [];
 }
 
 // Dynamic SEO Metadata

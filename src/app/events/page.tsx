@@ -9,93 +9,7 @@ export const metadata: Metadata = {
     "Jelajahi seluruh event budaya, pariwisata, kuliner, UMKM, workshop, dan seni di Bali.",
 };
 
-// Fallback mock data when database is not yet migrated
-const mockEvents = [
-  {
-    id: "1",
-    title: "Festival Budaya Ubud 2026",
-    slug: "festival-budaya-ubud-2026",
-    description:
-      "Perayaan seni pertunjukan, lokakarya budaya, dan pameran seni rupa tahunan di Ubud.",
-    poster:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-08-10T00:00:00.000Z",
-    price: 150000,
-    quota: 1000,
-    category: { id: "c1", name: "Budaya", slug: "budaya" },
-    location: { id: "l1", name: "Gianyar" },
-  },
-  {
-    id: "2",
-    title: "Pertunjukan Tari Kecak Uluwatu",
-    slug: "pertunjukan-tari-kecak-uluwatu",
-    description:
-      "Dramatisasi kisah Ramayana melalui paduan suara ritmis tari kecak di Uluwatu.",
-    poster:
-      "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-06-01T00:00:00.000Z",
-    price: 150000,
-    quota: 200,
-    category: { id: "c2", name: "Seni", slug: "seni" },
-    location: { id: "l2", name: "Badung" },
-  },
-  {
-    id: "3",
-    title: "Bali Culinary & Food Bazaar",
-    slug: "bali-culinary-food-bazaar",
-    description:
-      "Pusat festival kuliner yang menyajikan kuliner otentik Bali dari babi guling hingga sate lilit.",
-    poster:
-      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-06-15T00:00:00.000Z",
-    price: 0,
-    quota: 300,
-    category: { id: "c3", name: "Kuliner", slug: "kuliner" },
-    location: { id: "l3", name: "Denpasar" },
-  },
-  {
-    id: "4",
-    title: "Workshop Membuat Canang Sari",
-    slug: "workshop-membuat-canang-sari",
-    description:
-      "Pelajari seni melipat janur dan membuat canang sari sebagai persembahan harian masyarakat Bali.",
-    poster:
-      "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-06-20T00:00:00.000Z",
-    price: 50000,
-    quota: 30,
-    category: { id: "c4", name: "Workshop", slug: "workshop" },
-    location: { id: "l1", name: "Denpasar" },
-  },
-  {
-    id: "5",
-    title: "Pameran UMKM Bali Kreatif",
-    slug: "pameran-umkm-bali-kreatif",
-    description:
-      "Pameran kerajinan tangan lokal, produk kreatif, dan inovasi UMKM terbaik dari seluruh Bali.",
-    poster:
-      "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-07-05T00:00:00.000Z",
-    price: 0,
-    quota: 500,
-    category: { id: "c5", name: "UMKM", slug: "umkm" },
-    location: { id: "l2", name: "Badung" },
-  },
-  {
-    id: "6",
-    title: "Desa Wisata Penglipuran Festival",
-    slug: "desa-wisata-penglipuran-festival",
-    description:
-      "Festival kebudayaan dan pameran desa adat terbersih di dunia, menampilkan arsitektur tradisional.",
-    poster:
-      "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80",
-    startDate: "2026-09-01T00:00:00.000Z",
-    price: 25000,
-    quota: 500,
-    category: { id: "c6", name: "Pariwisata", slug: "pariwisata" },
-    location: { id: "l4", name: "Bangli" },
-  },
-];
+
 
 const mockCategories = [
   { id: "c1", name: "Budaya", slug: "budaya" },
@@ -193,10 +107,7 @@ export default async function EventsPage() {
     );
   }
 
-  // Fall back to mock data if DB returned nothing
-  if (events.length === 0) {
-    events = mockEvents;
-  }
+
 
   return (
     <div className="py-12 min-h-screen">

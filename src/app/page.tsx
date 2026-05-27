@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { prisma } from "@/lib/prisma";
 import {
   Calendar,
   MapPin,
@@ -12,49 +13,6 @@ import {
   Compass,
   Award,
 } from "lucide-react";
-
-// Mock data as requested ("Gunakan data dummy dulu, jangan ambil dari database")
-const popularEvents = [
-  {
-    id: "1",
-    title: "Festival Budaya Ubud 2026",
-    slug: "festival-budaya-ubud-2026",
-    description:
-      "Perayaan seni pertunjukan, lokakarya budaya, dan pameran seni rupa tahunan yang menghadirkan seniman lokal dan internasional di Ubud.",
-    poster:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
-    startDate: "10 Agustus 2026",
-    price: "Rp 150.000",
-    category: "Budaya",
-    location: "Ubud, Gianyar",
-  },
-  {
-    id: "2",
-    title: "Pertunjukan Tari Kecak Uluwatu",
-    slug: "pertunjukan-tari-kecak-uluwatu",
-    description:
-      "Nikmati dramatisasi kisah Ramayana melalui paduan suara ritmis tari kecak berlatar belakang pura tebing samudera dan matahari terbenam Uluwatu.",
-    poster:
-      "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?auto=format&fit=crop&w=800&q=80",
-    startDate: "01 Juni 2026",
-    price: "Rp 150.000",
-    category: "Seni",
-    location: "Uluwatu, Badung",
-  },
-  {
-    id: "3",
-    title: "Bali Culinary & Food Bazaar",
-    slug: "bali-culinary-food-bazaar",
-    description:
-      "Pusat festival kuliner yang menyajikan kuliner otentik Bali mulai dari babi guling, sate lilit, hingga kuliner modern kreatif nusantara.",
-    poster:
-      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
-    startDate: "15 Juni 2026",
-    price: "Gratis",
-    category: "Kuliner",
-    location: "Renon, Denpasar",
-  },
-];
 
 const categories = [
   {
@@ -140,7 +98,36 @@ const benefits = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const popularEvents = await prisma.event.findMany({
+    where: { status: "APPROVED" },
+    include: {
+      category: { select: { name: true } },
+      location: { select: { name: true, city: true } },
+    },
+    take: 3,
+    orderBy: { createdAt: "desc" },
+  });
+
+  // Formatting date helper
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(date));
+  };
+
+  // Price formatting helper
+  const formatPrice = (price: number) => {
+    if (price === 0) return "Gratis";
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* 1. Hero Section */}
@@ -282,62 +269,76 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {popularEvents.map((evt) => (
-              <div
-                key={evt.id}
-                className="flex flex-col bg-white dark:bg-[#121214] rounded-2xl border border-gray-200/60 dark:border-gray-800/80 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
-              >
-                {/* Poster */}
-                <div className="aspect-[16/10] w-full relative bg-gray-150 overflow-hidden">
-                  <img
-                    src={evt.poster}
-                    alt={evt.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-4 left-4 bg-white/90 dark:bg-bali-charcoal/90 backdrop-blur-sm text-xs font-bold text-primary px-3 py-1 rounded-full border border-orange-100 dark:border-orange-950">
-                    {evt.category}
-                  </div>
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 p-6 flex flex-col justify-between text-left">
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap gap-y-2 items-center text-xs text-gray-500 dark:text-gray-400 space-x-4">
-                      <span className="flex items-center">
-                        <Calendar className="mr-1.5 h-3.5 w-3.5 text-primary" />
-                        {evt.startDate}
-                      </span>
-                      <span className="flex items-center">
-                        <MapPin className="mr-1.5 h-3.5 w-3.5 text-secondary" />
-                        {evt.location}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-1">
-                      {evt.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed">
-                      {evt.description}
-                    </p>
-                  </div>
-
-                  <div className="pt-6 mt-6 border-t border-gray-100 dark:border-gray-800/60 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-gray-400 block">Harga Tiket</span>
-                      <span className="font-bold text-primary text-lg">
-                        {evt.price}
-                      </span>
-                    </div>
-                    <Link href={`/events/${evt.slug}`}>
-                      <Button variant="primary" size="sm">
-                        Detail Event
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
+          {popularEvents.length === 0 ? (
+            <div className="p-16 text-center max-w-md mx-auto space-y-4 bg-white dark:bg-[#121214] border border-gray-100 dark:border-gray-800 rounded-3xl shadow-sm">
+              <div className="p-4 rounded-full bg-gray-50 dark:bg-gray-900 text-gray-400 w-16 h-16 flex items-center justify-center mx-auto border border-gray-100 dark:border-gray-800">
+                <Calendar className="h-8 w-8 text-gray-400" />
               </div>
-            ))}
-          </div>
+              <div className="space-y-1">
+                <h4 className="font-bold text-gray-800 dark:text-gray-200">Belum Ada Event</h4>
+                <p className="text-xs text-gray-400 dark:text-gray-500 leading-normal">
+                  Saat ini belum ada event budaya atau pariwisata yang dipublikasikan. Organizer dapat membuat event baru melalui panel dasbor.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {popularEvents.map((evt) => (
+                <div
+                  key={evt.id}
+                  className="flex flex-col bg-white dark:bg-[#121214] rounded-2xl border border-gray-200/60 dark:border-gray-800/80 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
+                >
+                  {/* Poster */}
+                  <div className="aspect-[16/10] w-full relative bg-gray-150 overflow-hidden">
+                    <img
+                      src={evt.poster || "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80"}
+                      alt={evt.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-4 left-4 bg-white/90 dark:bg-bali-charcoal/90 backdrop-blur-sm text-xs font-bold text-primary px-3 py-1 rounded-full border border-orange-100 dark:border-orange-950">
+                      {evt.category.name}
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 p-6 flex flex-col justify-between text-left">
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-y-2 items-center text-xs text-gray-500 dark:text-gray-400 space-x-4">
+                        <span className="flex items-center">
+                          <Calendar className="mr-1.5 h-3.5 w-3.5 text-primary animate-pulse" />
+                          {formatDate(evt.startDate)}
+                        </span>
+                        <span className="flex items-center">
+                          <MapPin className="mr-1.5 h-3.5 w-3.5 text-secondary" />
+                          {evt.location.name} ({evt.location.city})
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-1">
+                        {evt.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed font-medium">
+                        {evt.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-6 mt-6 border-t border-gray-100 dark:border-gray-800/60 flex items-center justify-between">
+                      <div>
+                        <span className="text-xs text-gray-400 block">Harga Tiket</span>
+                        <span className="font-bold text-primary text-lg">
+                          {formatPrice(evt.price)}
+                        </span>
+                      </div>
+                      <Link href={`/events/${evt.slug}`}>
+                        <Button variant="primary" size="sm">
+                          Detail Event
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </Container>
       </section>
 
