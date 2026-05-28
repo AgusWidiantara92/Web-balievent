@@ -3,6 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import QRCode from "qrcode";
 import {
   Ticket,
   Calendar,
@@ -10,7 +11,6 @@ import {
   Clock,
   ArrowLeft,
   QrCode,
-  Tag,
   Info,
 } from "lucide-react";
 
@@ -33,6 +33,29 @@ export default async function UserTicketsPage() {
     },
     orderBy: { createdAt: "desc" },
   });
+
+  // 3. Generate QR codes for all tickets
+  const tickets = await Promise.all(
+    registrations.map(async (reg) => {
+      let qrCodeDataUrl = "";
+      try {
+        qrCodeDataUrl = await QRCode.toDataURL(reg.registrationCode, {
+          margin: 1,
+          width: 200,
+          color: {
+            dark: "#0f172a", // slate-900 for high contrast
+            light: "#ffffff",
+          },
+        });
+      } catch (err) {
+        console.error("QR Code generation failed:", err);
+      }
+      return {
+        ...reg,
+        qrCodeDataUrl,
+      };
+    })
+  );
 
   // Date Formatter Helper
   const formatIndonesianDate = (date: Date) => {
@@ -79,8 +102,8 @@ export default async function UserTicketsPage() {
             </Link>
           </div>
 
-          {/* Registrations List */}
-          {registrations.length === 0 ? (
+          {/* Tickets List */}
+          {tickets.length === 0 ? (
             <div className="bg-white dark:bg-[#1c1c21] rounded-3xl p-16 text-center shadow-md border border-gray-150/40 dark:border-gray-800/80 space-y-6 max-w-lg mx-auto">
               <div className="h-16 w-16 bg-orange-100 dark:bg-orange-950/30 rounded-full flex items-center justify-center mx-auto text-primary border border-orange-100 dark:border-orange-900/40">
                 <Ticket className="h-8 w-8" />
@@ -99,7 +122,7 @@ export default async function UserTicketsPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {registrations.map((reg) => {
+              {tickets.map((reg) => {
                 const event = reg.event;
                 const isCancelled = reg.status === "CANCELLED";
 
@@ -184,7 +207,7 @@ export default async function UserTicketsPage() {
 
                       {/* Notes / Catatan */}
                       {reg.notes && (
-                        <div className="mt-3 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-[11px] text-gray-500 dark:text-gray-400 flex items-start gap-1.5">
+                        <div className="mt-3 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-150 dark:border-gray-850 text-[11px] text-gray-500 dark:text-gray-400 flex items-start gap-1.5">
                           <Info className="h-3.5 w-3.5 text-gray-400 flex-shrink-0 mt-0.5" />
                           <div>
                             <span className="font-semibold block text-gray-700 dark:text-gray-300">Catatan pendaftaran:</span>
@@ -196,8 +219,16 @@ export default async function UserTicketsPage() {
 
                     {/* Ticket QR Stub / Right part */}
                     <div className="md:w-1/4 p-6 bg-bali-sand/20 dark:bg-bali-charcoal/10 flex flex-col items-center justify-center text-center gap-3">
-                      <div className="p-3 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-150 dark:border-gray-700">
-                        <QrCode className="h-16 w-16 text-gray-800 dark:text-gray-200" />
+                      <div className="p-2.5 bg-white rounded-2xl shadow-sm border border-gray-150 dark:border-gray-700 flex items-center justify-center overflow-hidden h-[112px] w-[112px] flex-shrink-0">
+                        {reg.qrCodeDataUrl ? (
+                          <img
+                            src={reg.qrCodeDataUrl}
+                            alt={`QR Code ${reg.registrationCode}`}
+                            className="h-full w-full object-contain"
+                          />
+                        ) : (
+                          <QrCode className="h-14 w-14 text-gray-800" />
+                        )}
                       </div>
                       <div className="space-y-1">
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Registration Code</p>
