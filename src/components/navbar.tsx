@@ -19,7 +19,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 glass-effect border-b border-gray-200/50 dark:border-gray-800/50">
+    <nav className="sticky top-0 z-50 bg-white/95 dark:bg-[#121214]/95 backdrop-blur-md shadow-sm">
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -137,6 +137,9 @@ export function Navbar() {
           </div>
         </div>
       )}
+      
+      {/* Accent gradient line representing Balinese Sunset & Ocean */}
+      <div className="h-[2.5px] w-full bg-gradient-to-r from-primary via-secondary to-accent" />
     </nav>
   );
 }

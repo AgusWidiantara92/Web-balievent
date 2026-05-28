@@ -3,6 +3,8 @@ import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/container";
 import { PendingEventsTable } from "./pending-events-table";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   ShieldAlert,
   User as UserIcon,
@@ -82,21 +84,34 @@ export default async function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* Functional Sign Out form utilizing Server Action */}
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/" });
-              }}
-            >
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 px-5 py-3 bg-gray-100 hover:bg-red-50 hover:text-red-600 dark:bg-gray-900 dark:hover:bg-red-950/20 dark:hover:text-red-400 text-gray-700 dark:text-gray-300 font-bold text-sm rounded-xl transition-all border border-gray-200/20 shadow-sm cursor-pointer"
+            {/* Actions Quick Menu */}
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/dashboard/admin/categories">
+                <Button
+                  variant="outline"
+                  size="md"
+                  className="font-bold border-primary text-primary hover:bg-orange-50 dark:hover:bg-orange-950/20 h-[46px] rounded-xl cursor-pointer"
+                >
+                  Kelola Kategori
+                </Button>
+              </Link>
+              
+              {/* Functional Sign Out form utilizing Server Action */}
+              <form
+                action={async () => {
+                  "use server";
+                  await signOut({ redirectTo: "/" });
+                }}
               >
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 px-5 py-3 bg-gray-100 hover:bg-red-50 hover:text-red-600 dark:bg-gray-900 dark:hover:bg-red-950/20 dark:hover:text-red-400 text-gray-700 dark:text-gray-300 font-bold text-sm rounded-xl transition-all border border-gray-200/20 shadow-sm cursor-pointer"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </button>
+              </form>
+            </div>
           </div>
 
           {/* Statistics Grid */}
