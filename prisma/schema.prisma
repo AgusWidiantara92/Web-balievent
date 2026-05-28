@@ -156,6 +156,9 @@ model EventRegistration {
   registrationCode String             @unique // e.g. EVT-2026-XXXXX
   qrCode           String?            @db.Text // Can store Base64 QR code or URL
   status           RegistrationStatus @default(REGISTERED)
+  ticketQuantity   Int                @default(1)
+  totalPrice       Float              @default(0)
+  notes            String?            @db.Text
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
 

@@ -2,6 +2,7 @@ import { signOut } from "@/auth";
 import { requireRole } from "@/lib/auth";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   User as UserIcon,
   Mail,
@@ -99,10 +100,13 @@ export default async function UserDashboardPage() {
 
               {/* Action grid dummy for beautiful styling */}
               <div className="grid grid-cols-3 gap-3 mt-6">
-                <div className="p-3 bg-orange-50 dark:bg-orange-950/20 rounded-xl border border-orange-100/50 dark:border-orange-900/30 text-center cursor-pointer hover:scale-[1.02] transition-transform">
+                <Link
+                  href="/dashboard/user/tickets"
+                  className="p-3 bg-orange-50 dark:bg-orange-950/20 rounded-xl border border-orange-100/50 dark:border-orange-900/30 text-center cursor-pointer hover:scale-[1.02] transition-transform block"
+                >
                   <Ticket className="h-5 w-5 text-primary mx-auto mb-1" />
                   <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">Tiket Saya</span>
-                </div>
+                </Link>
                 <div className="p-3 bg-teal-50 dark:bg-teal-950/20 rounded-xl border border-teal-100/50 dark:border-teal-900/30 text-center cursor-pointer hover:scale-[1.02] transition-transform">
                   <Heart className="h-5 w-5 text-secondary mx-auto mb-1" />
                   <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">Event Favorit</span>

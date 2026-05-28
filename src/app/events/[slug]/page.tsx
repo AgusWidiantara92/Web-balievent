@@ -3,6 +3,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/container";
+import { getCurrentUser } from "@/lib/auth";
+import { RegistrationForm } from "@/components/events/registration-form";
+
+export const dynamic = "force-dynamic";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
@@ -141,6 +145,44 @@ export default async function EventDetailPage({ params }: PageProps) {
   if (!event) {
     notFound();
   }
+
+  // Get current authenticated user
+  const user = await getCurrentUser();
+
+  // Check if user is already registered for this event
+  let isAlreadyRegistered = false;
+  if (user) {
+    const existingRegistration = await prisma.eventRegistration.findFirst({
+      where: {
+        eventId: event.id,
+        userId: user.id,
+        status: {
+          in: ["REGISTERED", "ATTENDED", "NOT_ATTENDED"],
+        },
+      },
+    });
+    isAlreadyRegistered = !!existingRegistration;
+  }
+
+  // Calculate remaining quota for the event
+  const activeRegistrations = await prisma.eventRegistration.findMany({
+    where: {
+      eventId: event.id,
+      status: {
+        in: ["REGISTERED", "ATTENDED", "NOT_ATTENDED"],
+      },
+    },
+    select: {
+      ticketQuantity: true,
+    },
+  });
+
+  const totalRegisteredTickets = activeRegistrations.reduce(
+    (sum, reg) => sum + reg.ticketQuantity,
+    0
+  );
+
+  const remainingQuota = event.quota - totalRegisteredTickets;
 
   // Get related events
   const relatedEvents = await getRelatedEvents(event.category.id, event.id);
@@ -317,30 +359,27 @@ export default async function EventDetailPage({ params }: PageProps) {
                   <div>
                     <h4 className="font-bold text-gray-800 dark:text-gray-200">Kuota Tersedia</h4>
                     <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
-                      {event.quota} Kursi Maksimal
+                      {remainingQuota} / {event.quota} Kursi Tersisa
                     </p>
                     <div className="w-full bg-gray-200 dark:bg-gray-800 h-1.5 rounded-full mt-2 overflow-hidden">
-                      <div className="bg-primary h-full rounded-full w-[15%]" />
+                      <div className="bg-primary h-full rounded-full transition-all duration-500" style={{ width: `${event.quota > 0 ? Math.min(100, Math.round((totalRegisteredTickets / event.quota) * 100)) : 0}%` }} />
                     </div>
-                    <span className="text-[10px] text-gray-400 font-semibold uppercase mt-1 block">Slot Terisi: 15%</span>
+                    <span className="text-[10px] text-gray-400 font-semibold uppercase mt-1 block">Slot Terisi: {event.quota > 0 ? Math.min(100, Math.round((totalRegisteredTickets / event.quota) * 100)) : 0}%</span>
                   </div>
                 </div>
 
               </div>
 
-              {/* Action Register Button */}
+              {/* Action Register Button Form */}
               <div className="pt-2">
-                <Button
-                  variant="primary"
-                  className="w-full justify-center py-4 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-bold text-base rounded-xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98] cursor-not-allowed"
-                  disabled
-                >
-                  <Ticket className="h-5 w-5 mr-2" />
-                  Daftar Event
-                </Button>
-                <p className="text-[11px] text-center text-gray-400 mt-2 font-medium">
-                  *Pendaftaran untuk event ini belum dibuka atau sedang dalam peninjauan.
-                </p>
+                <RegistrationForm
+                  eventId={event.id}
+                  eventPrice={event.price}
+                  remainingQuota={remainingQuota}
+                  isAlreadyRegistered={isAlreadyRegistered}
+                  isLoggedIn={!!user}
+                  slug={event.slug}
+                />
               </div>
 
               {/* Share section */}

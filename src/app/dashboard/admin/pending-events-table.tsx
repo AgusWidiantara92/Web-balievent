@@ -87,13 +87,25 @@ export function PendingEventsTable({ events }: PendingEventsTableProps) {
 
   // Reject Event Handler
   const handleReject = (eventId: string, eventTitle: string) => {
-    const reason = window.prompt(
-      `Masukkan alasan penolakan untuk event "${eventTitle}" (opsional):`,
-      "Informasi kurang lengkap atau gambar poster tidak valid."
-    );
+    let reason = "";
+    let isValid = false;
 
-    // If user clicked Cancel in prompt, abort the reject operation
-    if (reason === null) return;
+    while (!isValid) {
+      const input = window.prompt(
+        `Masukkan alasan penolakan untuk event "${eventTitle}" (Wajib diisi):`,
+        "Informasi kurang lengkap atau gambar poster tidak valid."
+      );
+
+      // If user clicked Cancel in prompt, abort the reject operation
+      if (input === null) return;
+
+      if (input.trim() === "") {
+        window.alert("Alasan penolakan wajib diisi!");
+      } else {
+        reason = input;
+        isValid = true;
+      }
+    }
 
     setFeedback(null);
     setActiveEventId(eventId);

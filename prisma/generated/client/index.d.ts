@@ -9850,8 +9850,20 @@ export namespace Prisma {
 
   export type AggregateEventRegistration = {
     _count: EventRegistrationCountAggregateOutputType | null
+    _avg: EventRegistrationAvgAggregateOutputType | null
+    _sum: EventRegistrationSumAggregateOutputType | null
     _min: EventRegistrationMinAggregateOutputType | null
     _max: EventRegistrationMaxAggregateOutputType | null
+  }
+
+  export type EventRegistrationAvgAggregateOutputType = {
+    ticketQuantity: number | null
+    totalPrice: number | null
+  }
+
+  export type EventRegistrationSumAggregateOutputType = {
+    ticketQuantity: number | null
+    totalPrice: number | null
   }
 
   export type EventRegistrationMinAggregateOutputType = {
@@ -9861,6 +9873,9 @@ export namespace Prisma {
     registrationCode: string | null
     qrCode: string | null
     status: $Enums.RegistrationStatus | null
+    ticketQuantity: number | null
+    totalPrice: number | null
+    notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9872,6 +9887,9 @@ export namespace Prisma {
     registrationCode: string | null
     qrCode: string | null
     status: $Enums.RegistrationStatus | null
+    ticketQuantity: number | null
+    totalPrice: number | null
+    notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9883,11 +9901,24 @@ export namespace Prisma {
     registrationCode: number
     qrCode: number
     status: number
+    ticketQuantity: number
+    totalPrice: number
+    notes: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
+
+  export type EventRegistrationAvgAggregateInputType = {
+    ticketQuantity?: true
+    totalPrice?: true
+  }
+
+  export type EventRegistrationSumAggregateInputType = {
+    ticketQuantity?: true
+    totalPrice?: true
+  }
 
   export type EventRegistrationMinAggregateInputType = {
     id?: true
@@ -9896,6 +9927,9 @@ export namespace Prisma {
     registrationCode?: true
     qrCode?: true
     status?: true
+    ticketQuantity?: true
+    totalPrice?: true
+    notes?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9907,6 +9941,9 @@ export namespace Prisma {
     registrationCode?: true
     qrCode?: true
     status?: true
+    ticketQuantity?: true
+    totalPrice?: true
+    notes?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9918,6 +9955,9 @@ export namespace Prisma {
     registrationCode?: true
     qrCode?: true
     status?: true
+    ticketQuantity?: true
+    totalPrice?: true
+    notes?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -9961,6 +10001,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: EventRegistrationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EventRegistrationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: EventRegistrationMinAggregateInputType
@@ -9991,6 +10043,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: EventRegistrationCountAggregateInputType | true
+    _avg?: EventRegistrationAvgAggregateInputType
+    _sum?: EventRegistrationSumAggregateInputType
     _min?: EventRegistrationMinAggregateInputType
     _max?: EventRegistrationMaxAggregateInputType
   }
@@ -10002,9 +10056,14 @@ export namespace Prisma {
     registrationCode: string
     qrCode: string | null
     status: $Enums.RegistrationStatus
+    ticketQuantity: number
+    totalPrice: number
+    notes: string | null
     createdAt: Date
     updatedAt: Date
     _count: EventRegistrationCountAggregateOutputType | null
+    _avg: EventRegistrationAvgAggregateOutputType | null
+    _sum: EventRegistrationSumAggregateOutputType | null
     _min: EventRegistrationMinAggregateOutputType | null
     _max: EventRegistrationMaxAggregateOutputType | null
   }
@@ -10030,6 +10089,9 @@ export namespace Prisma {
     registrationCode?: boolean
     qrCode?: boolean
     status?: boolean
+    ticketQuantity?: boolean
+    totalPrice?: boolean
+    notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     event?: boolean | EventDefaultArgs<ExtArgs>
@@ -10043,6 +10105,9 @@ export namespace Prisma {
     registrationCode?: boolean
     qrCode?: boolean
     status?: boolean
+    ticketQuantity?: boolean
+    totalPrice?: boolean
+    notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     event?: boolean | EventDefaultArgs<ExtArgs>
@@ -10056,6 +10121,9 @@ export namespace Prisma {
     registrationCode?: boolean
     qrCode?: boolean
     status?: boolean
+    ticketQuantity?: boolean
+    totalPrice?: boolean
+    notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     event?: boolean | EventDefaultArgs<ExtArgs>
@@ -10069,11 +10137,14 @@ export namespace Prisma {
     registrationCode?: boolean
     qrCode?: boolean
     status?: boolean
+    ticketQuantity?: boolean
+    totalPrice?: boolean
+    notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type EventRegistrationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "eventId" | "userId" | "registrationCode" | "qrCode" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["eventRegistration"]>
+  export type EventRegistrationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "eventId" | "userId" | "registrationCode" | "qrCode" | "status" | "ticketQuantity" | "totalPrice" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["eventRegistration"]>
   export type EventRegistrationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     event?: boolean | EventDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -10100,6 +10171,9 @@ export namespace Prisma {
       registrationCode: string
       qrCode: string | null
       status: $Enums.RegistrationStatus
+      ticketQuantity: number
+      totalPrice: number
+      notes: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["eventRegistration"]>
@@ -10533,6 +10607,9 @@ export namespace Prisma {
     readonly registrationCode: FieldRef<"EventRegistration", 'String'>
     readonly qrCode: FieldRef<"EventRegistration", 'String'>
     readonly status: FieldRef<"EventRegistration", 'RegistrationStatus'>
+    readonly ticketQuantity: FieldRef<"EventRegistration", 'Int'>
+    readonly totalPrice: FieldRef<"EventRegistration", 'Float'>
+    readonly notes: FieldRef<"EventRegistration", 'String'>
     readonly createdAt: FieldRef<"EventRegistration", 'DateTime'>
     readonly updatedAt: FieldRef<"EventRegistration", 'DateTime'>
   }
@@ -12208,6 +12285,9 @@ export namespace Prisma {
     registrationCode: 'registrationCode',
     qrCode: 'qrCode',
     status: 'status',
+    ticketQuantity: 'ticketQuantity',
+    totalPrice: 'totalPrice',
+    notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12907,6 +12987,9 @@ export namespace Prisma {
     registrationCode?: StringFilter<"EventRegistration"> | string
     qrCode?: StringNullableFilter<"EventRegistration"> | string | null
     status?: EnumRegistrationStatusFilter<"EventRegistration"> | $Enums.RegistrationStatus
+    ticketQuantity?: IntFilter<"EventRegistration"> | number
+    totalPrice?: FloatFilter<"EventRegistration"> | number
+    notes?: StringNullableFilter<"EventRegistration"> | string | null
     createdAt?: DateTimeFilter<"EventRegistration"> | Date | string
     updatedAt?: DateTimeFilter<"EventRegistration"> | Date | string
     event?: XOR<EventScalarRelationFilter, EventWhereInput>
@@ -12920,6 +13003,9 @@ export namespace Prisma {
     registrationCode?: SortOrder
     qrCode?: SortOrderInput | SortOrder
     status?: SortOrder
+    ticketQuantity?: SortOrder
+    totalPrice?: SortOrder
+    notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     event?: EventOrderByWithRelationInput
@@ -12936,6 +13022,9 @@ export namespace Prisma {
     userId?: StringFilter<"EventRegistration"> | string
     qrCode?: StringNullableFilter<"EventRegistration"> | string | null
     status?: EnumRegistrationStatusFilter<"EventRegistration"> | $Enums.RegistrationStatus
+    ticketQuantity?: IntFilter<"EventRegistration"> | number
+    totalPrice?: FloatFilter<"EventRegistration"> | number
+    notes?: StringNullableFilter<"EventRegistration"> | string | null
     createdAt?: DateTimeFilter<"EventRegistration"> | Date | string
     updatedAt?: DateTimeFilter<"EventRegistration"> | Date | string
     event?: XOR<EventScalarRelationFilter, EventWhereInput>
@@ -12949,11 +13038,16 @@ export namespace Prisma {
     registrationCode?: SortOrder
     qrCode?: SortOrderInput | SortOrder
     status?: SortOrder
+    ticketQuantity?: SortOrder
+    totalPrice?: SortOrder
+    notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: EventRegistrationCountOrderByAggregateInput
+    _avg?: EventRegistrationAvgOrderByAggregateInput
     _max?: EventRegistrationMaxOrderByAggregateInput
     _min?: EventRegistrationMinOrderByAggregateInput
+    _sum?: EventRegistrationSumOrderByAggregateInput
   }
 
   export type EventRegistrationScalarWhereWithAggregatesInput = {
@@ -12966,6 +13060,9 @@ export namespace Prisma {
     registrationCode?: StringWithAggregatesFilter<"EventRegistration"> | string
     qrCode?: StringNullableWithAggregatesFilter<"EventRegistration"> | string | null
     status?: EnumRegistrationStatusWithAggregatesFilter<"EventRegistration"> | $Enums.RegistrationStatus
+    ticketQuantity?: IntWithAggregatesFilter<"EventRegistration"> | number
+    totalPrice?: FloatWithAggregatesFilter<"EventRegistration"> | number
+    notes?: StringNullableWithAggregatesFilter<"EventRegistration"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"EventRegistration"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"EventRegistration"> | Date | string
   }
@@ -13643,6 +13740,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     event: EventCreateNestedOneWithoutRegistrationsInput
@@ -13656,6 +13756,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13665,6 +13768,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     event?: EventUpdateOneRequiredWithoutRegistrationsNestedInput
@@ -13678,6 +13784,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13689,6 +13798,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13698,6 +13810,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13709,6 +13824,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14409,8 +14527,16 @@ export namespace Prisma {
     registrationCode?: SortOrder
     qrCode?: SortOrder
     status?: SortOrder
+    ticketQuantity?: SortOrder
+    totalPrice?: SortOrder
+    notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type EventRegistrationAvgOrderByAggregateInput = {
+    ticketQuantity?: SortOrder
+    totalPrice?: SortOrder
   }
 
   export type EventRegistrationMaxOrderByAggregateInput = {
@@ -14420,6 +14546,9 @@ export namespace Prisma {
     registrationCode?: SortOrder
     qrCode?: SortOrder
     status?: SortOrder
+    ticketQuantity?: SortOrder
+    totalPrice?: SortOrder
+    notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14431,8 +14560,16 @@ export namespace Prisma {
     registrationCode?: SortOrder
     qrCode?: SortOrder
     status?: SortOrder
+    ticketQuantity?: SortOrder
+    totalPrice?: SortOrder
+    notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type EventRegistrationSumOrderByAggregateInput = {
+    ticketQuantity?: SortOrder
+    totalPrice?: SortOrder
   }
 
   export type EnumRegistrationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -15437,6 +15574,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     event: EventCreateNestedOneWithoutRegistrationsInput
@@ -15448,6 +15588,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15616,6 +15759,9 @@ export namespace Prisma {
     registrationCode?: StringFilter<"EventRegistration"> | string
     qrCode?: StringNullableFilter<"EventRegistration"> | string | null
     status?: EnumRegistrationStatusFilter<"EventRegistration"> | $Enums.RegistrationStatus
+    ticketQuantity?: IntFilter<"EventRegistration"> | number
+    totalPrice?: FloatFilter<"EventRegistration"> | number
+    notes?: StringNullableFilter<"EventRegistration"> | string | null
     createdAt?: DateTimeFilter<"EventRegistration"> | Date | string
     updatedAt?: DateTimeFilter<"EventRegistration"> | Date | string
   }
@@ -16041,6 +16187,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutRegistrationsInput
@@ -16052,6 +16201,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16645,6 +16797,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16787,6 +16942,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     event?: EventUpdateOneRequiredWithoutRegistrationsNestedInput
@@ -16798,6 +16956,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16808,6 +16969,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17013,6 +17177,9 @@ export namespace Prisma {
     registrationCode: string
     qrCode?: string | null
     status?: $Enums.RegistrationStatus
+    ticketQuantity?: number
+    totalPrice?: number
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17031,6 +17198,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutRegistrationsNestedInput
@@ -17042,6 +17212,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17052,6 +17225,9 @@ export namespace Prisma {
     registrationCode?: StringFieldUpdateOperationsInput | string
     qrCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+    ticketQuantity?: IntFieldUpdateOperationsInput | number
+    totalPrice?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

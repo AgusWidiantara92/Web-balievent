@@ -3,6 +3,8 @@ import { Container } from "@/components/ui/container";
 import { EventsContent } from "@/components/events/events-content";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Daftar Event - BaliEvent",
   description:

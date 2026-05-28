@@ -154,9 +154,11 @@ export async function updateEventAction(
     };
   }
 
-  // 9. Perform revalidation and redirection outside of the try-catch block
+  // Perform revalidation and redirection outside of the try-catch block
   if (isSuccess) {
     revalidatePath("/dashboard/organizer");
+    revalidatePath("/events");
+    revalidatePath("/");
     redirect("/dashboard/organizer");
   }
 
@@ -215,6 +217,8 @@ export async function deleteEventAction(
   // 4. Perform revalidation and redirection outside of the try-catch block
   if (isSuccess) {
     revalidatePath("/dashboard/organizer");
+    revalidatePath("/events");
+    revalidatePath("/");
     redirect("/dashboard/organizer");
   }
 

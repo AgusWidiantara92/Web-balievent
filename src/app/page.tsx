@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import {
   Calendar,
   MapPin,

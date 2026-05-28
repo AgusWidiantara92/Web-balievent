@@ -208,6 +208,9 @@ exports.Prisma.EventRegistrationScalarFieldEnum = {
   registrationCode: 'registrationCode',
   qrCode: 'qrCode',
   status: 'status',
+  ticketQuantity: 'ticketQuantity',
+  totalPrice: 'totalPrice',
+  notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

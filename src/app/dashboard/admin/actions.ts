@@ -34,6 +34,7 @@ export async function approveEventAction(eventId: string): Promise<ActionState> 
     // 3. Revalidate dashboard and public events pages
     revalidatePath("/dashboard/admin");
     revalidatePath("/events");
+    revalidatePath("/");
 
     return { success: true, message: "Event berhasil disetujui." };
   } catch (error: any) {
@@ -61,17 +62,24 @@ export async function rejectEventAction(
       return { success: false, message: "ID Event tidak valid." };
     }
 
-    // 2. Update event status to REJECTED
+    // 2. Validate that rejectionReason is provided and not empty
+    if (!reason || reason.trim() === "") {
+      return { success: false, message: "Alasan penolakan (rejectionReason) wajib diisi." };
+    }
+
+    // 3. Update event status to REJECTED
     await prisma.event.update({
       where: { id: eventId },
       data: {
         status: "REJECTED",
-        rejectionReason: reason || "Ditolak oleh administrator.",
+        rejectionReason: reason.trim(),
       },
     });
 
-    // 3. Revalidate dashboard
+    // 4. Revalidate dashboard and public pages
     revalidatePath("/dashboard/admin");
+    revalidatePath("/events");
+    revalidatePath("/");
 
     return { success: true, message: "Event berhasil ditolak." };
   } catch (error: any) {
