@@ -55,21 +55,92 @@ export type FilterOption = {
   slug?: string;
 };
 
-export default async function EventsPage() {
+interface PageProps {
+  searchParams: Promise<{
+    q?: string;
+    category?: string;
+    location?: string;
+    priceType?: string;
+    sortBy?: string;
+    page?: string;
+  }>;
+}
+
+export default async function EventsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const q = params.q || "";
+  const category = params.category || "";
+  const location = params.location || "";
+  const priceType = params.priceType || "";
+  const sortBy = params.sortBy || "terdekat";
+  const page = params.page ? parseInt(params.page) : 1;
+
+  const EVENTS_PER_PAGE = 6;
+  const skip = (page - 1) * EVENTS_PER_PAGE;
+
+  // Build Prisma where clause
+  const whereClause: any = {
+    status: "APPROVED",
+  };
+
+  if (q) {
+    whereClause.title = {
+      contains: q,
+      mode: "insensitive",
+    };
+  }
+
+  if (category) {
+    whereClause.category = {
+      slug: category,
+    };
+  }
+
+  if (location) {
+    whereClause.locationId = location;
+  }
+
+  if (priceType === "gratis") {
+    whereClause.price = 0;
+  } else if (priceType === "berbayar") {
+    whereClause.price = {
+      gt: 0,
+    };
+  }
+
+  // Build Prisma orderBy clause
+  let orderByClause: any = { startDate: "asc" };
+
+  if (sortBy === "terbaru") {
+    orderByClause = { createdAt: "desc" };
+  } else if (sortBy === "terdekat") {
+    orderByClause = { startDate: "asc" };
+  } else if (sortBy === "termurah") {
+    orderByClause = { price: "asc" };
+  }
+
   let events: EventCardData[] = [];
   let categories: FilterOption[] = mockCategories;
   let locations: FilterOption[] = mockLocations;
+  let totalCount = 0;
 
   try {
-    const [dbEvents, dbCategories, dbLocations] = await Promise.all([
+    const [dbEvents, dbCount, dbCategories, dbLocations] = await Promise.all([
       prisma.event.findMany({
-        where: { status: "APPROVED" },
+        where: whereClause,
         include: { category: true, location: true },
-        orderBy: { startDate: "asc" },
+        orderBy: orderByClause,
+        skip,
+        take: EVENTS_PER_PAGE,
+      }),
+      prisma.event.count({
+        where: whereClause,
       }),
       prisma.category.findMany({ orderBy: { name: "asc" } }),
       prisma.location.findMany({ orderBy: { name: "asc" } }),
     ]);
+
+    totalCount = dbCount;
 
     if (dbEvents.length > 0) {
       events = dbEvents.map((evt) => ({
@@ -103,13 +174,9 @@ export default async function EventsPage() {
     if (dbLocations.length > 0) {
       locations = dbLocations.map((l) => ({ id: l.id, name: l.name }));
     }
-  } catch {
-    console.log(
-      "Database not connected or not migrated. Using mock data for /events."
-    );
+  } catch (error) {
+    console.error("Database fetch failed or tables do not exist:", error);
   }
-
-
 
   return (
     <div className="py-12 min-h-screen">
@@ -125,11 +192,21 @@ export default async function EventsPage() {
           </p>
         </div>
 
-        {/* Client-side interactive content: filters + cards + pagination */}
+        {/* Server-filtered content */}
         <EventsContent
           events={events}
           categories={categories}
           locations={locations}
+          totalEvents={totalCount}
+          currentPage={page}
+          totalPages={Math.ceil(totalCount / EVENTS_PER_PAGE)}
+          activeFilters={{
+            q,
+            category,
+            location,
+            priceType,
+            sortBy,
+          }}
         />
       </Container>
     </div>
